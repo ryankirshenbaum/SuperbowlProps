@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>text</title>
+</head>
+<header>
+    <h1 style="text-align:center">Super Bowl Prop Bet Tracker 2021</h1>
+</header>
+<body>
+    <h1>Update Bets</h1>
+   <h1>{{value}}</h1>
+   <form class = "ey" method="POST" action="{{url_for('hello')}}">
+       <select name= bets method="POST" action="/">
+           {% for user in users %}
+           <option value= "{{user}}" SELECTED>{{user}}</option>"
+           {% endfor %}
+       </select>
+       <input name="result" placeholder="Enter Result">
+       <input type="submit" value="Submit" placeholder="Select Bet">
+   </form>
+
+    <h1>Standings</h1>
+
+    <title>{% block title %}{% endblock %}</title>
+    <ul>{% for leader in leaders %}
+            <li><strong>{{leader[0]}}:</strong> {{leader[1]}}</li>
+
+        {% endfor %}
+    </ul>
+
+   <h1>Bets</h1>
+    <ul>{% for result in results %}
+        <li><strong>{{result[0]}}:</strong> {{result[1]}}</li>
+
+        {% endfor %}
+    </ul>
+
+</body>
+
+</html>
