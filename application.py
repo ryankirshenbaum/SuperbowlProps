@@ -94,7 +94,7 @@ def update_results(results, item_to_update, value):
     results[item_to_update] = value
     return results
 
-app = Flask(__name__)
+application = Flask(__name__)
 df = df.dropna(subset=['Name'])
 df2 = df.append(pd.Series(name="results"))
 score = [0] * len(df2)
@@ -102,7 +102,7 @@ df2["score"] = score
 scores = df2.loc["results"].fillna('N/A')
 
 
-@app.route('/', methods=["GET", "POST"])
+@application.route('/', methods=["GET", "POST"])
 def hello():
     selected_value = ""
     result = ""
@@ -123,4 +123,4 @@ def hello():
     return render_template('index.html', users = keys, leaders=leaders, results = bet_results)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    application.run(host="0.0.0.0", port=5000, debug=True)
