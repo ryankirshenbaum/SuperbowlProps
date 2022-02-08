@@ -1,8 +1,8 @@
+from calendar import c
 from flask import Flask, render_template, request, url_for
 import pandas as pd
 import numpy as np
-
-
+import math
 
 data = [['Evan Krikler', 'Over', 'Super Bowl', 'Over', 'Andy Reid', 'Over', 'Yes', 'Tails', 'Chiefs', 'Pass', 'Touchdown', 'Gronk', 'Kelce', 'Bucs', 'Chiefs', 'Butker', 'Mahomes', 'Bucs', 'Brady', 'Jones', 'No', 'No', 'Kelce', 'CEH', 'Over', 'Under', 'Over', 'Over', 'Jones', 'Pringle', 'Over', 'Over', 'Yes', 'Chiefs', 'Chiefs', 'Bucs', 'Mahomes', 'Over', 'Blue', 'Blinding Lights', 'Yes', 'God', 'Chiefs 35-21'],
 ['Carrie Glass', 'Over', 'Super Bowl', 'Over', 'Bruce Arians', 'Under', 'Yes', 'Heads', 'Bucs', 'Pass', 'Field Goal', 'Evans', 'Williams', 'Chiefs', 'Chiefs', 'Butker', 'Mahomes', 'Bucs', 'Mahomes', 'Edwards', 'No', 'No', 'Kelce', 'Fournette', 'Under', 'Over', 'Under', 'Under', 'Jones', 'Godwin', 'Over', 'Under', 'No', 'Chiefs', 'Chiefs', 'Chiefs', 'Mahomes', 'Under', 'Orange', 'Acquainted', 'No', 'Teammates', 'KC 30 TB 24'],
@@ -46,7 +46,6 @@ data = [['Evan Krikler', 'Over', 'Super Bowl', 'Over', 'Andy Reid', 'Over', 'Yes
 ['Ambar', 'Over', 'Age', 'Over', 'Andy Reid', 'Under', 'Yes', 'Tails', 'Chiefs', 'Pass', 'Touchdown', 'CEH', 'Brate', 'Chiefs', 'Bucs', 'Butker', 'Mahomes', 'Bucs', 'CEH', 'JPP', 'No', 'Yes', 'Hill', 'Fournette', 'Under', 'Under', 'Over', 'Over', 'Suh', 'Kelce', 'Over', 'Over', 'Yes', 'Chiefs', 'Chiefs', 'Bucs', 'Mahomes', 'Over', 'Orange', 'Star Boy', 'Yes', 'Family', 'Chiefs 41-28']]
 
 df = pd.DataFrame(data, columns=['Name', 'Anthem over/under 1 minute and 59 Seconds (Jazmine Sullivan and Eric Church are singing)', 'What Will Be Verbally Mentioned/Alluded to First?', "How Many Times Will Gisele Bundchen (Brady's wife) Be Shown? (Post Game Broadcast DOESN'T Count) (Over/Under 1.5)", 'Who is shown first on TV during the national anthem', "Will the Total Points scored in the 1st half be Over/Under Jayson Tatum's Point Total vs. Suns of Feb. 7th", "Will Travis Kelce and Tyreek Hill combine to catch more balls than Russel Westbrooks' Assist total against the Hornets on Feb. 7th", 'Coin Toss', 'Which team wins the coin toss', 'First play type', 'First type of score', 'First Touchdown Scorer (3 points)', 'Last Touchdown Scorer (3 points)', 'Which team will score first', 'Which team will be the last to score?', 'Which player will hit the first field goal (Extra point DOES NOT count)', 'Which player will throw for more yards', 'First takeaway (Defensive team)', 'First player to commit a turnover (offensive player) (3 Points)', 'First player to cause a turnover (Defensive Player) (If it is a fumble, the player who caused the fumble) (3 points)', 'Will there be a safety', 'Will there be a defensive/special teams touchdown', 'Who will lead the game in receiving yards? (3 Points)', 'Who will lead the game in rushing yards? (3 Points)', 'Total sacks in the game (over/ under 4.5 )', 'Total turnovers in the game (over/under 2.5)', 'Total Penalties Accepted (over/under 12.5)', 'Longest Touchdown scored in the game (over/under 45.5 yards )', 'Player to Record the 1st Sack of the Game (2 points) ** If it is a half-sack 1 point will be awarded to each player involved', 'Player to Catch the 1st pass of the game (2 points)', 'Shortest Touchdown scored in the game (over/under 1.5 yards )', 'Longest FG scored in the game (over/under 47.5 yards )', 'Will there be a successful 2 Point Conversion', 'Who will be leading at halftime', 'Team to have First Coaches Challenge', 'Team to call First Timeout', 'Super bowl MVP? (3 points)', 'Total points (over/under 56.5)', 'Color of Gatorade bath on winning coach (2 Points)', 'First The Weekend Song (2 Points)', 'Will The Weekend Mention Canada During The Halftime Show', 'Who does the MVP thank first in the interview after he gets the award', 'Tie Breaker: Pick the winning team and the score of the game  (First tie break: Winning Team, Second tie break: Closest to Total Points Scored, Third Tie Break: 1 on 1 Flip Cup (full cup on zoom))'])
-
                   
 def update_scores(df2, results):
     for index, row in df2.iterrows():
@@ -58,10 +57,20 @@ def update_scores(df2, results):
             if type(row.values[k]) == str and type(results.values[k]) == str:
 
                 if row.values[k].lower() == results.values[k].lower():
-                    count += 1
+                    if '3 points' in row.index[k].lower():
+                        count += 3
+                    elif '2 points' in row.index[k].lower():
+                        count += 2
+                    else:
+                        count += 1
             else:
                 if row.values[k] == results.values[k]:
-                    count += 1
+                    if '3 points' in row.index[k].lower():
+                        count += 3
+                    elif '2 points' in row.index[k].lower():
+                        count += 2
+                    else:
+                        count += 1
 
         df2["score"][index] = count
 
@@ -90,9 +99,7 @@ df = df.dropna(subset=['Name'])
 df2 = df.append(pd.Series(name="results"))
 score = [0] * len(df2)
 df2["score"] = score
-scores = df2.loc["results"]
-
-
+scores = df2.loc["results"].fillna('N/A')
 
 
 @app.route('/', methods=["GET", "POST"])
@@ -105,8 +112,8 @@ def hello():
     keys = results.keys()
     selected_value = request.form.get('bets')
     result = request.form.get('result')
-    print(selected_value)
-    print(result)
+    # print(selected_value)
+    # print(result)
     results = update_results(results, selected_value, result)
     data = update_scores(data, results)
     leaders = get_scores_sorted(data)
@@ -114,3 +121,6 @@ def hello():
     results = results.values[0:len(results.values)-2]
     bet_results = zip(keys, results)
     return render_template('index.html', users = keys, leaders=leaders, results = bet_results)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

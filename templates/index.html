@@ -21,21 +21,26 @@
    </form>
 
     <h1>Standings</h1>
-
     <title>{% block title %}{% endblock %}</title>
-    <ul>{% for leader in leaders %}
-            <li><strong>{{leader[0]}}:</strong> {{leader[1]}}</li>
-
+    <table style = " border: 1px solid black; border-collapse: collapse;">
+        {% for leader in leaders %}
+        <tr>
+            <th style=" border: 1px solid black; border-collapse: collapse;">{{leader[0]}}</th>
+            <td style = " border: 1px solid black; border-collapse: collapse;"><text style = "padding-right: 20px; padding-left: 20px;">{{leader[1]}}</text></td> 
+        </tr>
         {% endfor %}
-    </ul>
+    </table>
 
    <h1>Bets</h1>
-    <ul>{% for result in results %}
-        <li><strong>{{result[0]}}:</strong> {{result[1]}}</li>
+   <table style = " border: 1px solid black; border-collapse: collapse;">
+    {% for result in results %}
+        <tr>
+            <th style=" border: 1px solid black; border-collapse: collapse;">{{result[0]}}</th>
+            <td style = " border: 1px solid black; border-collapse: collapse;"><text style = "padding-right: 20px; padding-left: 20px;">{{result[1]}}</text></td> 
 
+        </tr>
         {% endfor %}
-    </ul>
+   </table>
 
 </body>
-
 </html>
