@@ -95,6 +95,8 @@ def update_results(results, item_to_update, value):
     return results
 
 application = Flask(__name__)
+df = pd.read_csv('static/data/bets.csv')
+df = df.drop('Timestamp', 1)
 df = df.dropna(subset=['Name'])
 df2 = df.append(pd.Series(name="results"))
 score = [0] * len(df2)
@@ -103,7 +105,7 @@ scores = df2.loc["results"].fillna('N/A')
 
 
 @application.route('/', methods=["GET", "POST"])
-def hello():
+def main():
     selected_value = ""
     result = ""
     data = df2
